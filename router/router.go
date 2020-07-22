@@ -74,6 +74,12 @@ func Load(options ...gin.HandlerFunc) *gin.Engine {
 	// Webhook endpoint
 	r.POST("/webhook", api.PostWebhook)
 
+	// worker endpoints
+	worker := r.Group(base)
+	{
+		WorkerHandlers(worker)
+	}
+
 	// Authentication endpoints
 	authenticate := r.Group("/authenticate")
 	{

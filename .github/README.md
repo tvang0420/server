@@ -40,3 +40,5 @@ Copyright (c) 2020 Target Brands, Inc.
 [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
 This is part one of multiple commits pushed at the same time
+
+This is part two of multiple commits pushed at the same time

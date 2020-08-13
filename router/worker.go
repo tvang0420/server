@@ -7,9 +7,6 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-vela/server/api/worker"
-	"github.com/go-vela/server/router/middleware/build"
-	"github.com/go-vela/server/router/middleware/repo"
-	"github.com/go-vela/server/router/middleware/worker/executors"
 )
 
 // WorkerHandlers is a function that extends the provided base router group
@@ -22,7 +19,6 @@ func WorkerHandlers(base *gin.RouterGroup) {
 	// Worker endpoints
 	_workers := base.Group("/workers/:worker")
 	{
-		_workers.DELETE("/:org/:repo/:build", repo.Establish(), build.Establish(), executors.Establish(), worker.Kill)
 		_workers.GET("/health", worker.Health)
 	} // end of Worker endpoints
 }

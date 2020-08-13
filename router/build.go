@@ -10,6 +10,7 @@ import (
 	"github.com/go-vela/server/router/middleware"
 	"github.com/go-vela/server/router/middleware/build"
 	"github.com/go-vela/server/router/middleware/perm"
+	"github.com/go-vela/server/router/middleware/worker/executors"
 )
 
 // BuildHandlers is a function that extends the provided base router group
@@ -55,6 +56,7 @@ func BuildHandlers(base *gin.RouterGroup) {
 			build.PUT("", perm.MustWrite(), middleware.Payload(), api.UpdateBuild)
 			build.DELETE("", perm.MustPlatformAdmin(), api.DeleteBuild)
 			build.GET("/logs", perm.MustRead(), api.GetBuildLogs)
+			build.DELETE("/cancel", perm.MustAdmin(), executors.Establish(), api.CancelBuild)
 
 			// Service endpoints
 			// * Log endpoints

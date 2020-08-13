@@ -28,15 +28,15 @@ func Retrieve(c *gin.Context) []library.Executor {
 // Establish sets the repo in the given context
 func Establish() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		worker := build.Retrieve(c).GetHost()
 
+		b := build.Retrieve(c)
+
+		// prepare the request to the worker
 		client := &http.Client{}
-
-		// get all executors on the worker
-		endpoint := "/api/v1/executors"
-		req, err := http.NewRequest("GET", worker+endpoint, nil)
+		endpoint := fmt.Sprintf("%s/api/v1/executors", b.GetHost())
+		req, err := http.NewRequest("GET", endpoint, nil)
 		if err != nil {
-			retErr := fmt.Errorf("unable to form request to %s: %w", worker+endpoint, err)
+			retErr := fmt.Errorf("unable to form request to %s: %w", endpoint, err)
 			util.HandleError(c, http.StatusBadRequest, retErr)
 			return
 		}
@@ -46,7 +46,7 @@ func Establish() gin.HandlerFunc {
 		// make the request to the worker
 		resp, err := client.Do(req)
 		if err != nil {
-			retErr := fmt.Errorf("unable to connect to %s: %w", worker+endpoint, err)
+			retErr := fmt.Errorf("unable to connect to %s: %w", endpoint, err)
 			util.HandleError(c, http.StatusBadRequest, retErr)
 			return
 		}
@@ -55,7 +55,7 @@ func Establish() gin.HandlerFunc {
 		// Read Response Body
 		respBody, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			retErr := fmt.Errorf("unable to read response from %s: %w", worker+endpoint, err)
+			retErr := fmt.Errorf("unable to read response from %s: %w", endpoint, err)
 			util.HandleError(c, http.StatusBadRequest, retErr)
 			return
 		}
@@ -64,7 +64,7 @@ func Establish() gin.HandlerFunc {
 
 		err = json.Unmarshal(respBody, e)
 		if err != nil {
-			retErr := fmt.Errorf("unable to parse response from %s: %w", worker+endpoint, err)
+			retErr := fmt.Errorf("unable to parse response from %s: %w", endpoint, err)
 			util.HandleError(c, http.StatusBadRequest, retErr)
 			return
 		}

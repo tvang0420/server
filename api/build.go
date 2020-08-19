@@ -996,7 +996,6 @@ func CancelBuild(c *gin.Context) {
 				return
 			}
 			c.JSON(resp.StatusCode, strings.Trim(string(respBody), "\""))
-			//c.JSON(http.StatusOK, fmt.Sprintf("Deleted build %s/%d", e.Repo.GetFullName(), e.Build.GetID()))
 			return
 		}
 	}

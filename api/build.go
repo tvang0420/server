@@ -1000,6 +1000,7 @@ func CancelBuild(c *gin.Context) {
 		}
 	}
 
-	retErr := fmt.Errorf("Unable to find a build for %s/%d on worker %s", r.GetFullName(), b, b.GetHost())
+	// build has been abandoned
+	retErr := fmt.Errorf("Unable to find a running build for %s/%d", r.GetFullName(), b.GetNumber())
 	util.HandleError(c, http.StatusInternalServerError, retErr)
 }

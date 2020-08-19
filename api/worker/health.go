@@ -14,7 +14,7 @@ import (
 	"github.com/go-vela/server/util"
 )
 
-// swagger:operation GET /api/v1/workers/{worker} workers Health
+// swagger:operation GET /api/v1/workers/{worker} workers WorkerHealth
 //
 // Check if the worker's API is available
 //
@@ -23,9 +23,14 @@ import (
 // produces:
 // - application/json
 // parameters:
+// - in: path
+//   name: worker
+//   description: worker hostname to get the health of
+//   required: true
+//   type: string
 // responses:
 //   '200':
-//     description: Successfully 'ping'-ed Vela worker's API
+//     description: Successfully 'ping'-ed the Vela worker's API
 //     schema:
 //       type: string
 

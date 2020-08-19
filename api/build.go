@@ -908,18 +908,42 @@ func cleanBuild(database database.Service, b *library.Build, services []*library
 	}
 }
 
-// swagger:operation GET /api/v1/workers/{worker} workers Kill
+// swagger:operation DELETE /api/v1/repos/{org}/{repo}/builds/{build}/cancel builds CancelBuild
 //
-// Check if the worker's API is available
+// Cancel a running build
 //
 // ---
 // x-success_http_code: '200'
 // produces:
 // - application/json
 // parameters:
+// - in: path
+//   name: repo
+//   description: Name of the repo
+//   required: true
+//   type: string
+// - in: path
+//   name: org
+//   description: Name of the org
+//   required: true
+//   type: string
+// - in: path
+//   name: build
+//   description: Build number to cancel
+//   required: true
+//   type: integer
+// - in: header
+//   name: Authorization
+//   description: Vela bearer token
+//   required: true
+//   type: string
 // responses:
 //   '200':
-//     description: Successfully 'ping'-ed Vela worker's API
+//     description: Successfully canceled the build
+//     schema:
+//       type: string
+//   '400':
+//     description: Unable to cancel build
 //     schema:
 //       type: string
 
@@ -944,7 +968,7 @@ func CancelBuild(c *gin.Context) {
 
 			// prepare the request to the worker
 			client := &http.Client{}
-			endpoint := fmt.Sprintf("%s/api/v1/executors/%d/build/cancel", b.GetHost(), executor.GetID())
+			endpoint := fmt.Sprintf("%s:8080/api/v1/executors/%d/build/cancel", b.GetHost(), executor.GetID())
 			req, err := http.NewRequest("DELETE", endpoint, nil)
 			if err != nil {
 				retErr := fmt.Errorf("unable to form a request to %s: %w", endpoint, err)
@@ -959,7 +983,7 @@ func CancelBuild(c *gin.Context) {
 			resp, err := client.Do(req)
 			if err != nil {
 				retErr := fmt.Errorf("unable to connect to %s: %w", endpoint, err)
-				util.HandleError(c, resp.StatusCode, retErr)
+				util.HandleError(c, http.StatusBadRequest, retErr)
 				return
 			}
 			defer resp.Body.Close()

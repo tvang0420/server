@@ -33,7 +33,7 @@ func Establish() gin.HandlerFunc {
 
 		// prepare the request to the worker
 		client := &http.Client{}
-		endpoint := fmt.Sprintf("%s/api/v1/executors", b.GetHost())
+		endpoint := fmt.Sprintf("%s:8080/api/v1/executors", b.GetHost())
 		req, err := http.NewRequest("GET", endpoint, nil)
 		if err != nil {
 			retErr := fmt.Errorf("unable to form request to %s: %w", endpoint, err)

@@ -115,6 +115,13 @@ func PostWebhook(c *gin.Context) {
 		return
 	}
 
+	// check if the hook should be skipped
+	if skip, skipReason := webhook.ShouldSkip(); skip {
+		c.JSON(http.StatusOK, fmt.Sprintf("skipping build: %s", skipReason))
+
+		return
+	}
+
 	h, r, b := webhook.Hook, webhook.Repo, webhook.Build
 
 	defer func() {
@@ -258,7 +265,7 @@ func PostWebhook(c *gin.Context) {
 
 	// if this is a comment on a pull_request event
 	if strings.EqualFold(b.GetEvent(), constants.EventComment) && webhook.PRNumber > 0 {
-		commit, branch, baseref, err := source.FromContext(c).GetPullRequest(u, r, webhook.PRNumber)
+		commit, branch, baseref, headref, err := source.FromContext(c).GetPullRequest(u, r, webhook.PRNumber)
 		if err != nil {
 			retErr := fmt.Errorf("%s: failed to get pull request info for %s: %v", baseErr, r.GetFullName(), err)
 			util.HandleError(c, http.StatusInternalServerError, retErr)
@@ -272,6 +279,7 @@ func PostWebhook(c *gin.Context) {
 		b.SetCommit(commit)
 		b.SetBranch(strings.Replace(branch, "refs/heads/", "", -1))
 		b.SetBaseRef(baseref)
+		b.SetHeadRef(headref)
 	}
 
 	// send API call to capture the last build for the repo
